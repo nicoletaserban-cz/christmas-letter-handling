@@ -1,17 +1,24 @@
 package com.christmas.letter.sender.model;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 public class Letter {
-    String email;
-    String name;
-    List<String> wishes;
-    String location;
+    @Email
+    @NotBlank
+    private String email;
+    private String name;
+    @NotBlank
+    private String body;
+    @NotEmpty
+    private List<String> wishes;
+    @NotBlank
+    private String location;
 }
