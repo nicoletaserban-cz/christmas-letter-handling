@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -35,11 +36,11 @@ public class LetterControllerIntegrationTest extends BaseTest {
 
     static Stream<Object[]> invalidArgumentsProvider() {
         return Stream.of(
-                new Object[]{"", RandomString.make(), RandomString.make(), List.of(RandomString.make()), RandomString.make()},
-                new Object[]{RandomString.make(), RandomString.make(), RandomString.make(), List.of(RandomString.make()), RandomString.make()},
-                new Object[]{RandomString.make() + "@test.com", RandomString.make(), "", List.of(RandomString.make()), RandomString.make()},
-                new Object[]{RandomString.make() + "@test.com", RandomString.make(), RandomString.make(), null, RandomString.make()},
-                new Object[]{RandomString.make() + "@test.com", RandomString.make(), RandomString.make(), List.of(RandomString.make()), null}
+                new Object[]{"", RandomString.make(), RandomString.make(), List.of(RandomString.make()), RandomString.make(), "{\"email\":\"must not be blank\"}"},
+                new Object[]{RandomString.make(), RandomString.make(), RandomString.make(), List.of(RandomString.make()), RandomString.make(), "{\"email\":\"must be a well-formed email address\"}"},
+                new Object[]{RandomString.make() + "@test.com", RandomString.make(), "", List.of(RandomString.make()), RandomString.make(), "{\"body\":\"must not be blank\"}"},
+                new Object[]{RandomString.make() + "@test.com", RandomString.make(), RandomString.make(), null, RandomString.make(), "{\"wishes\":\"must not be empty\"}"},
+                new Object[]{RandomString.make() + "@test.com", RandomString.make(), RandomString.make(), List.of(RandomString.make()), null, "{\"location\":\"must not be blank\"}"}
         );
     }
 
@@ -65,12 +66,13 @@ public class LetterControllerIntegrationTest extends BaseTest {
 
     @ParameterizedTest
     @MethodSource("invalidArgumentsProvider")
-    public void testSendLetterWithInvalidArguments(String email, String name, String body, List<String> wishes, String location) throws Exception {
+    public void testSendLetterWithInvalidArguments(String email, String name, String body, List<String> wishes, String location, String expectedMessage) throws Exception {
         Letter letter = new Letter(email, name, body, wishes, location);
 
         mockMvc.perform(post(userCreationApiPath)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new ObjectMapper().writeValueAsString(letter)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(expectedMessage));
     }
 }
