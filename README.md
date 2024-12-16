@@ -20,7 +20,13 @@ Challenge  #1
            - https://whattodevnow.medium.com/using-localstack-with-docker-compose-to-mock-aws-services-bb25a5b01d4b
   
    - Implement the first REST endpoint that allows anyone to publish a letter to Santa. The purpose of this endpoint is to simply publish the JSON representation of the letter to the SNS topic.
- 
+
+Challenge #2
+
+Create the second microservice(maven module) for the service that receives and stores the letters
+Create a queue to receive the letters published by the first service (localstack)
+Create and configure dynamo db for storage (localstack)
+Create two endpoints in this second service, one that retrieves a single letter, by sender's email, the second that retrieves a list of letters in a paginated manner (default 10 letters per page, custom page size should be supported)
  
 Notes:
    - Write the code as if it were production code (clean code, handle negative scenarios, validations etc.)
